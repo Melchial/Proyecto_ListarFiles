@@ -15,7 +15,7 @@ for r in rutas:
     p = Path(r).glob('**/*')
     # files = [x for x in p if x.is_file() and x.suffix in ('.mp4','.avi') ]
     for x in p:
-        if x.is_file() and x.suffix in ('.mp4','.avi'):
+        if x.is_file() and x.suffix in ('.mp4','.avi','.mkv','.wmv'):
             files.append(x)
     # break
 
@@ -25,7 +25,7 @@ for r in rutas:
 #     print(str(f.parent))
 #     print(type(f))
 
-workbook = xlsxwriter.Workbook("Data_List.xlsx")
+workbook = xlsxwriter.Workbook("Data_Files.xlsx")
 
 worksheet = workbook.add_worksheet("ListaMaster")
 
@@ -49,14 +49,23 @@ for f in files:
     
     ruta = str(f.parent)
     fname = str(f.name)
+    fnameOnlyStr = str(f.name).removesuffix(f.suffix).split("-") 
+    FnameCodeNumber= ''
+
+    fnameCodeSuffix = fnameOnlyStr[0]
+    if len(fnameOnlyStr) >1:
+        FnameCodeNumber = fnameOnlyStr[1]
+
+    fnameOnly = f"{fnameCodeSuffix}-{FnameCodeNumber.split('_')[0]}"
+
     fmod =  datetime.fromtimestamp(f.stat().st_mtime)
 
     column = 1
     worksheet.write_url (row,column,url=ruta, string=ruta)
     column +=1
-    worksheet.write (row,column,fname)
+    worksheet.write (row,column,fnameOnly)
     column +=1
-    worksheet.write_url (row,column,url=str(f), string=fname)
+    worksheet.write_url (row,column,url=str(f), string=str(f))
     column +=1
     worksheet.write_datetime (row,column,fmod,date_format)
 
